@@ -1,5 +1,30 @@
 module ConstructiveSolidGeometry
 
+export Coord
+export Ray
+export Surface
+export Plane
+export Sphere
+export InfCylinder
+export Box
+export Region
+export Cell
+export Geometry
+export +,-,*,^,|,-
+export reflect
+export generate_random_ray
+export raytrace
+export find_intersection
+export halfspace
+export is_in_cell
+export find_cell_id
+export plot_geometry_2D
+export plot_cell_2D
+export dot
+export magnitude
+export unitize
+export cross
+
 using Plots
 
 type Coord
@@ -77,7 +102,7 @@ cross(a::Coord, b::Coord) = Coord(a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y 
 #    1. Ray is inside the plane: Returns (true, NaN)
 #    2. Ray is parallel to the plan, but not inside: Returns (false, NaN)
 #    3. Ray never hits plane: Returns (false, NaN)
-function trace(ray::Ray, plane::Plane)
+function raytrace(ray::Ray, plane::Plane)
     dist::Float64 = dot( plane.point - ray.origin, plane.normal) / dot( ray.direction, plane.normal)    
     # Check if parallel
     if dist < 0 || dist == Inf
@@ -90,7 +115,7 @@ end
 # Returns hit, distance
 # hit: a boolean indicating if an intersection occurred (false if parallel or negative)
 # dist: distance to closest intersection point
-function trace(ray::Ray, sphere::Sphere)
+function raytrace(ray::Ray, sphere::Sphere)
     d::Coord = ray.origin - sphere.center 
     t::Float64 = -dot(ray.direction, d)
     discriminant::Float64 = t^2
@@ -122,7 +147,7 @@ end
 # Returns hit, distance
 # hit: a boolean indicating if an intersection occurred (false if parallel or negative)
 # dist: distance to closest intersection point
-function trace(ray::Ray, infcylinder::InfCylinder)
+function raytrace(ray::Ray, infcylinder::InfCylinder)
     A = infcylinder.center
     # Generate point new point in cylinder for math
     B = infcylinder.center + infcylinder.normal
@@ -199,12 +224,12 @@ end
 # Core ray tracing function. Takes a ray and an array of surfaces to test.
 # Moves ray forward and reflects its direction if needed
 # returns ray and shape index
-function raytrace(ray::Ray, surfaces::Array{Surface})
+function find_intersection(ray::Ray, surfaces::Array{Surface})
     BUMP::Float64 = 1.0e-9
     min::Float64 = 1e30
     id::Int64 = -1
     for i = 1:length(surfaces)
-        hit, dist = trace(ray, surfaces[i])
+        hit, dist = raytrace(ray, surfaces[i])
         if hit == true
             if dist < min
                 min = dist
@@ -323,13 +348,6 @@ function ~(a::Region)
         b.halfspace = -1
     end
     return b
-end
-
-function ~(a::Bool)
-    if a == true
-        return false
-    end
-    return true
 end
 
 function is_in_cell(p::Coord, cell::Cell)
