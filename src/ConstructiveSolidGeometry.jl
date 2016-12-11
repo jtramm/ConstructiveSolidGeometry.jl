@@ -44,12 +44,36 @@ type Plane <: Surface
     point::Coord
     normal::Coord
     reflective::Bool
+	vacuum::Bool
+	Plane(point::Coord, normal::Coord, ref::Bool, vac::Bool) = new(point, normal, ref, vac)
+	function Plane(point::Coord, normal::Coord, boundary::String)
+		if boundary == "reflective"
+			new(point, normal, true, false)
+		elseif boundary == "vacuum"
+			new(point, normal, false, true)
+		else
+			new(point, normal, false, false)
+		end
+	end
+	Plane(point::Coord, normal::Coord) = new(point, normal, false, false)
 end
 
 type Sphere <: Surface
     center::Coord
     radius::Float64
     reflective::Bool
+	vacuum::Bool
+	Sphere(c::Coord, r::Float64, ref::Bool, vac::Bool) = new(c, r, ref, vac)
+	function Sphere(c::Coord, r::Float64, boundary::String)
+		if boundary == "reflective"
+			new(c, r, true, false)
+		elseif boundary == "vacuum"
+			new(c, r, false, true)
+		else
+			new(c, r, false, false)
+		end
+	end
+	Sphere(c::Coord, r::Float64) = new(c, r, false, false)
 end
 
 type InfCylinder <: Surface
@@ -57,6 +81,18 @@ type InfCylinder <: Surface
     normal::Coord
     radius::Float64
     reflective::Bool
+	vacuum::Bool
+	InfCylinder(c::Coord, n::Coord, r::Float64, ref::Bool, vac::Bool) = new(c, n, r, ref, vac)
+	function InfCylinder(c::Coord, n::Coord, r::Float64, boundary::String)
+		if boundary == "reflective"
+			new(c, n, r, true, false)
+		elseif boundary == "vacuum"
+			new(c, n, r, false, true)
+		else
+			new(c, n, r, false, false)
+		end
+	end
+	InfCylinder(c::Coord, n::Coord, r::Float64) = new(c, n, r, false, false)
 end
 
 type Box <: Surface
