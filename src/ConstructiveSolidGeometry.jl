@@ -260,12 +260,12 @@ end
 # Core ray tracing function. Takes a ray and an array of surfaces to test.
 # Moves ray forward and reflects its direction if needed
 # returns ray and shape index
-function find_intersection(ray::Ray, surfaces::Array{Surface})
+function find_intersection(ray::Ray, regions::Array{Region})
     BUMP::Float64 = 1.0e-9
     min::Float64 = 1e30
     id::Int64 = -1
-    for i = 1:length(surfaces)
-        hit, dist = raytrace(ray, surfaces[i])
+    for i = 1:length(regions)
+        hit, dist = raytrace(ray, regions[i].surface)
         if hit == true
             if dist < min
                 min = dist
@@ -276,18 +276,26 @@ function find_intersection(ray::Ray, surfaces::Array{Surface})
     
     new_ray::Ray = Ray(ray.origin + ray.direction * (min + BUMP), ray.direction)
     
-    if surfaces[id].reflective == true
-        new_ray = reflect(new_ray, surfaces[id])
+    if regions[id].surface.reflective == true
+        new_ray = reflect(new_ray, regions[id].surface)
         new_ray.origin = new_ray.origin + new_ray.direction * (2.0 * BUMP)
 		return new_ray, id, "reflective"
     end
     
-	if surfaces[id].vacuum == true
+	if regions[id].surface.vacuum == true
 		return new_ray, id, "vacuum"
     end
     
     return new_ray, id, "transmission"
 
+end
+
+# Overloaded form that works with full geometry rather than a specific cell
+# I.e., finds the cell that the ray is starting in then performs ray trace
+function find_intersection(ray::Ray, geometry::Geometry)
+	cell_id = find_cell_id(ray.origin, geometry)
+	regions::Array{Region} = geometry.cells[cell_id]	
+	return find_intersection(ray, regions)
 end
 
 # Plane halfspace determination
