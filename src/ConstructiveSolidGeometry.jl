@@ -277,12 +277,16 @@ function find_intersection(ray::Ray, surfaces::Array{Surface})
     new_ray::Ray = Ray(ray.origin + ray.direction * (min + BUMP), ray.direction)
     
     if surfaces[id].reflective == true
-        #println("reflecting on id", id)
         new_ray = reflect(new_ray, surfaces[id])
         new_ray.origin = new_ray.origin + new_ray.direction * (2.0 * BUMP)
+		return new_ray, id, "reflective"
     end
     
-    return new_ray, id
+	if surfaces[id].vacuum == true
+		return new_ray, id, "vacuum"
+    end
+    
+    return new_ray, id, "transmission"
 
 end
 
