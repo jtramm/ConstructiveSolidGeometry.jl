@@ -10,7 +10,7 @@ export Box
 export Region
 export Cell
 export Geometry
-export +,-,*,^,|,-
+export +,-,*,^,|
 export reflect
 export generate_random_ray
 export raytrace
