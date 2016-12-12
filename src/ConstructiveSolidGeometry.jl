@@ -294,7 +294,7 @@ end
 # I.e., finds the cell that the ray is starting in then performs ray trace
 function find_intersection(ray::Ray, geometry::Geometry)
 	cell_id = find_cell_id(ray.origin, geometry)
-	regions::Array{Region} = geometry.cells[cell_id]	
+	regions::Array{Region} = geometry.cells[cell_id].regions	
 	return find_intersection(ray, regions)
 end
 
