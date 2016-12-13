@@ -6,7 +6,7 @@ Created by John Tramm (jtramm@mit.edu).
 
 ## Installation
 
-Before using this package, be sure to run:
+Once the package has been accepeted by `METADATA`, you will be able to install via:
 
 ```julia
 Pkg.add("ConstructiveSolidGeometry")
@@ -20,8 +20,19 @@ using ConstructiveSolidGeometry
 
 ## Documentation
 
-A full explanation of the package, its design and methodology is given in the examples directory.
-A number of examples are also provided in that directory.
+A full explanation of the package, its design and methodology is given in the examples directory:
+
+[Introduction](https://github.com/jtramm/ConstructiveSolidGeometry.jl/blob/master/examples/1-Introduction.ipynb)
+
+A number of examples are also provided in that directory:
+
+[CSG Logical Operators](https://github.com/jtramm/ConstructiveSolidGeometry.jl/blob/master/examples/2-CSG_Logical_Operators.ipynb)
+[Simple Geometry Example: Pincell](https://github.com/jtramm/ConstructiveSolidGeometry.jl/blob/master/examples/3-Pincell.ipynb)
+[Monte Carlo Particle Random Walk Example](https://github.com/jtramm/ConstructiveSolidGeometry.jl/blob/master/examples/4-Monte_Carlo_Particle_Simulation.ipynb)
+
+The full public API is also available:
+
+[Introduction](https://github.com/jtramm/ConstructiveSolidGeometry.jl/blob/master/docs/build/index.md)
 
 
 [![Build Status](https://travis-ci.org/jtramm/ConstructiveSolidGeometry.jl.svg?branch=master)](https://travis-ci.org/jtramm/ConstructiveSolidGeometry.jl)
