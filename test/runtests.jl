@@ -310,3 +310,5 @@ geometry = Geometry(cells, bounding_box)
 
 @test find_cell_id(Coord(0.41,0.0,0), geometry) == 1
 @test find_cell_id(Coord(0.05,0.0,0), geometry) == 2
+
+println("Tests complete")
