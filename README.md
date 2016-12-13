@@ -27,7 +27,9 @@ A full explanation of the package, its design and methodology is given in the ex
 A number of examples are also provided in that directory:
 
 [CSG Logical Operators](https://github.com/jtramm/ConstructiveSolidGeometry.jl/blob/master/examples/2-CSG_Logical_Operators.ipynb)
+
 [Simple Geometry Example: Pincell](https://github.com/jtramm/ConstructiveSolidGeometry.jl/blob/master/examples/3-Pincell.ipynb)
+
 [Monte Carlo Particle Random Walk Example](https://github.com/jtramm/ConstructiveSolidGeometry.jl/blob/master/examples/4-Monte_Carlo_Particle_Simulation.ipynb)
 
 The full public API is also available:
