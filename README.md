@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/jtramm/ConstructiveSolidGeometry.jl.svg?branch=master)](https://travis-ci.org/jtramm/ConstructiveSolidGeometry.jl)
+[![Coverage Status](https://coveralls.io/repos/github/jtramm/ConstructiveSolidGeometry.jl/badge.svg?branch=master)](https://coveralls.io/github/jtramm/ConstructiveSolidGeometry.jl?branch=master)
+[![codecov.io](http://codecov.io/github/jtramm/ConstructiveSolidGeometry.jl/coverage.svg?branch=master)](http://codecov.io/github/jtramm/ConstructiveSolidGeometry.jl?branch=master)
 # ConstructiveSolidGeometry.jl
 
 A light weight constructive solid geometry and ray tracing package for Julia.
@@ -38,8 +41,3 @@ The full public API is also available:
 [Introduction](https://github.com/jtramm/ConstructiveSolidGeometry.jl/blob/master/docs/build/index.md)
 
 
-[![Build Status](https://travis-ci.org/jtramm/ConstructiveSolidGeometry.jl.svg?branch=master)](https://travis-ci.org/jtramm/ConstructiveSolidGeometry.jl)
-
-[![Coverage Status](https://coveralls.io/repos/github/jtramm/ConstructiveSolidGeometry.jl/badge.svg?branch=master)](https://coveralls.io/github/jtramm/ConstructiveSolidGeometry.jl?branch=master)
-
-[![codecov.io](http://codecov.io/github/jtramm/ConstructiveSolidGeometry.jl/coverage.svg?branch=master)](http://codecov.io/github/jtramm/ConstructiveSolidGeometry.jl?branch=master)
