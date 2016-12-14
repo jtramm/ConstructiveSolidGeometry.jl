@@ -290,7 +290,7 @@ push!(regions, Region(down, -1))
 push!(regions, Region(left_cyl, -1))
 push!(regions, Region(right_cyl, -1))
 
-ex = :(1 ^ 2 ^ 3 ^ 4 ^ 5 ^ 6 ^ (~(7 | 8)))
+ex = :(1 ^ 2 ^ 3 ^ 4 ^ 5 ^ (~(7 | 8)) ^ 6 )
 
 push!(cells, Cell(regions, ex))
 
@@ -310,5 +310,29 @@ geometry = Geometry(cells, bounding_box)
 
 @test find_cell_id(Coord(0.41,0.0,0), geometry) == 1
 @test find_cell_id(Coord(0.05,0.0,0), geometry) == 2
+
+# Test random ray generation
+ray = generate_random_ray(geometry.bounding_box)
+@test ray.origin.x >= geometry.bounding_box.lower_left.x
+@test ray.origin.y >= geometry.bounding_box.lower_left.y
+@test ray.origin.z >= geometry.bounding_box.lower_left.z
+@test ray.origin.x <= geometry.bounding_box.upper_right.x
+@test ray.origin.y <= geometry.bounding_box.upper_right.y
+@test ray.origin.z <= geometry.bounding_box.upper_right.z
+ray2 = generate_random_ray(geometry.bounding_box)
+@test ray.origin != ray2.origin
+@test ray.direction != ray2.direction
+
+# Test intersection routines
+ray = Ray(Coord(0.0, 0.0, 0.0), Coord(1.0, 0.0, 0.0) )
+new_ray, id, bc_type = find_intersection(ray, geometry)
+@test new_ray.origin.x ≈ 0.125
+@test new_ray.origin.y ≈ 0.0
+@test new_ray.origin.z ≈ 0.0
+@test new_ray.direction.x ≈ 1.0
+@test new_ray.direction.y ≈ 0.0
+@test new_ray.direction.z ≈ 0.0
+@test id == 3
+@test bc_type == "transmission"
 
 println("Tests complete")
