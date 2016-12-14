@@ -3,10 +3,7 @@
 [![codecov.io](http://codecov.io/github/jtramm/ConstructiveSolidGeometry.jl/coverage.svg?branch=master)](http://codecov.io/github/jtramm/ConstructiveSolidGeometry.jl?branch=master)
 # ConstructiveSolidGeometry.jl
 
-A light weight constructive solid geometry and ray tracing package for Julia.
-
-Created by John Tramm (jtramm@mit.edu).
-
+A lightweight constructive solid geometry and ray tracing package for scientific computing in Julia.
 
 ## Installation
 
@@ -38,6 +35,6 @@ A number of examples are also provided in that directory:
 
 The full public API is also available:
 
-[Introduction](https://github.com/jtramm/ConstructiveSolidGeometry.jl/blob/master/docs/build/index.md)
+[API](https://github.com/jtramm/ConstructiveSolidGeometry.jl/blob/master/docs/build/index.md)
 
-
+Created by John Tramm (jtramm@mit.edu).
