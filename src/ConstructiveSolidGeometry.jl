@@ -52,7 +52,7 @@ end
 A ray is defined by its origin and a unitized direction vector
 
 # Constructors
-* `Ray(origin::Coord, direction::Coord)
+* `Ray(origin::Coord, direction::Coord)`
 
 # Fields
 * `origin::Coord`
@@ -114,7 +114,7 @@ Defined by the center of the sphere, its radius, and an optional boundary condit
 # Arguments
 * `center::Coord`: The center of the sphere
 * `radius::Float64`: The radius of the sphere
-* `boundary::String`: Optional boundary condition, defined as a `String`. Options are \"transmission\" (default), \"vacuum\", and \"reflective\".
+* `boundary::String`: Optional boundary condition, defined as a `String`. Options are \"transmission\" (default) or\"vacuum\".
 """
 type Sphere <: Surface
     center::Coord
@@ -147,7 +147,7 @@ An arbitrary direction infinite cylinder defined by any point on its central axi
 * `center::Coord`: The center of the infinite cylinder
 * `normal::Coord`: A unit normal direction vector of the cylinder (i.e., a vector along its central axis), Recommended to use `unitize(c::Coord)` if normalizing is needed.
 * `radius::Float64`: The radius of the infinite cylinder
-* `boundary::String`: Optional boundary condition, defined as a `String`. Options are \"transmission\" (default), \"vacuum\", and \"reflective\".
+* `boundary::String`: Optional boundary condition, defined as a `String`. Options are \"transmission\" (default) or \"vacuum\".
 """
 type InfCylinder <: Surface
     center::Coord
@@ -171,7 +171,7 @@ end
 """
     type Box
 
-An axis aligned box is defined by the minimum `Coord` and maximum `Coord` of the box
+An axis aligned box is defined by the minimum `Coord` and maximum `Coord` of the box. Note that a Box is only used by ConstructiveSolidGeometry.jl for bounding box purposes, and is not a valid surface to define CSG cells with. Instead, you must define all six planes of a box independently.
 
 # Constructors
 * `Box(min::Coord, max::Coord)`
@@ -201,17 +201,32 @@ end
 """
     type Cell
 
-Defined by an array of Regions the logical combination of regions that define the cell
+Defined by an array of regions and the logical combination of those regions that define the cell
 
 # Constructors
-* `Cell(regions::Array{region}`
+* `Cell(regions::Array{Region}, definition::Expr)`
+
+# Arguments
+* `regions::Array{Region}`: An array of regions that are used to define the cell
+* `definition::Expr`: A logical expression that defines the volume of the cell. The intersection operator is ^, the union operator is |, and the complement operator is ~. Regions are defined by their integer indices in the regions array.
 """
 type Cell
     regions::Array{Region}
     definition::Expr
 end
 
-"The top level object that holds all the cells in the problem. This is used as input for the ray tracer"
+"""
+    type Geometry
+
+The top level object that holds all the cells in the problem. This object contains all data regarding the geometry within a system.
+
+# Constructors
+* `Geometry(cells::Array{Cell}, bounding_box::Box)`
+
+# Arguments
+* `cells::Array{Cell}`: All cells inside the geometry. The cells must combine to fill the entire space of the bounding box. No two cells should overlap.
+* `bounding_box::Box`: The bounding box around the problem.
+"""
 type Geometry
     cells::Array{Cell}
     bounding_box::Box
@@ -227,9 +242,17 @@ import Base: +, -, *, ^, |, ~
 *(a::Int, b::Coord)       = Coord(a*b.x, a*b.y, a*b.z)
 *(b::Coord, a::Int)       = Coord(a*b.x, a*b.y, a*b.z)
 dot(a::Coord, b::Coord)   = (a.x*b.x + a.y*b.y + a.z*b.z)
-"A utility function to determine the magnitude of a Coord object. Typical use case is to subtract two Coord objects and check the resulting Coord object's magnitude to determine the distance between the two Coords."
+"""
+    magnitude(a::Coord)
+
+A utility function to determine the magnitude of a `Coord` object. Typical use case is to subtract two Coord objects and check the resulting Coord object's magnitude to determine the distance between the two Coords.
+"""
 magnitude(a::Coord)       = sqrt(dot(a,a))
-"A utility function to unitize a Coord object"
+"""
+    unitize(a::Coord)
+
+A utility function to unitize a `Coord`
+"""
 unitize(a::Coord)         = (1. / magnitude(a) * a)
 cross(a::Coord, b::Coord) = Coord(a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y - a.y*b.x)
 
@@ -245,7 +268,11 @@ cross(a::Coord, b::Coord) = Coord(a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y 
 """
     function raytrace(ray::Ray, surface::Surface)
 
-Returns a tuple representing if an intersection occurs (Bool) between a Ray and a Surface, and the distance (Float64) the intersection occurs at.
+Determines if a `Ray` and a `Surface` intersect, and the distance to that intersection.
+
+# Returns
+* `Bool`: Indicates if the ray intersects the surface or not
+* `Float64`: The distance between the ray's origin and the point of intersection
 """
 function raytrace(ray::Ray, plane::Plane)
     dist::Float64 = dot( plane.point - ray.origin, plane.normal) / dot( ray.direction, plane.normal)    
@@ -335,7 +362,10 @@ end
 """
     reflect(ray::Ray, plane::Plane)
 
-Reflects a ray off a plane and returns a new ray with the same origin but different direction.
+Reflects a ray off a plane.
+
+# Return
+* `Ray`: A new ray with the same origin as input, but with the new reflected direction
 """
 function reflect(ray::Ray, plane::Plane)
     a = dot(ray.direction, plane.normal)
@@ -376,7 +406,12 @@ end
 """
     find_intersection(ray::Ray, regions::Array{Region})
 
-Takes a Ray and an array of Regions and performs ray tracing. It returns a new Ray that has been moved just accross the point of intersection, the surface id that was hit, and the boundary condition of the surface that was hit
+Performs ray tracing on an array of regions.
+
+# Return
+* `Ray`: A new Ray that has been moved just accross the point of intersection.
+* `Int64`: The surface id that was hit.
+* `String`: The boundary condition of the surface that was hit.
 """
 function find_intersection(ray::Ray, regions::Array{Region})
     BUMP::Float64 = 1.0e-9
@@ -411,7 +446,12 @@ end
 """
     find_intersection(ray::Ray, geometry::Geometry)
 
-Takes a Ray and a Geometry and performs ray tracing. It returns a new Ray that has been moved just accross the point of closest intersection, the surface id that was hit, and the boundary condition of the surface that was hit
+Performs ray tracing on a Geometry
+
+# Return
+* `Ray`: A new Ray that has been moved just accross the point of intersection.
+* `Int64`: The surface id that was hit.
+* `String`: The boundary condition of the surface that was hit.
 """
 function find_intersection(ray::Ray, geometry::Geometry)
 	cell_id = find_cell_id(ray.origin, geometry)
@@ -526,10 +566,6 @@ end
     is_in_cell(p::Coord, cell::Cell)
 
 Determines if a point (such as a Ray origin) is inside a given cell
-
-# Arguments
-* `p::Coord`: the point we want to test
-* `cell::Cell`: the cell we want to see if p is within
 """
 function is_in_cell(p::Coord, cell::Cell)
     result = navigate_tree(p, cell.regions, cell.definition)
@@ -595,11 +631,6 @@ end
     find_cell_id(p::Coord, geometry::Geometry)
 
 Finds the cell id that a point resides within
-
-# Arguments
-* `p::Coord': the point we are testing
-* `geometry::Geometry': the geometry that we are checking the point within
-
 """
 function find_cell_id(p::Coord, geometry::Geometry)
     for i = 1:length(geometry.cells)
