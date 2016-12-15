@@ -21,90 +21,194 @@ This is the full API for this package. A more thorough description of how to act
 
 
 
+type Coord
+
 An {x,y,z} coordinate type. Used throughout the ConstructiveSolidGeometry.jl package for speed.
 
+**Constructors**
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L30' class='documenter-source'>source</a><br>
+  * `Coord(x::Float64, y::Float64, z::Float64)`
+
+**Fields**
+
+  * `x::Float64`
+  * `y::Float64`
+  * `z::Float64`
+
+
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L30-L42' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.Surface' href='#ConstructiveSolidGeometry.Surface'>#</a>
 **`ConstructiveSolidGeometry.Surface`** &mdash; *Type*.
 
 
 
-An abstract class that all surfaces (Sphere, Plane, InfCylinder) inherit from. Implementation of new shapes should inherit from this
+```
+abstract Surface
+```
+
+An abstract class that all surfaces (`Sphere`, `Plane`, `InfCylinder`) inherit from. Implementation of new shapes should inherit from `Surface`.
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L43' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L66-L70' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.Ray' href='#ConstructiveSolidGeometry.Ray'>#</a>
 **`ConstructiveSolidGeometry.Ray`** &mdash; *Type*.
 
 
 
-A ray is defined by its origin (Coord) and a unitized direction vector (Coord)
+```
+type Ray
+```
+
+A ray is defined by its origin and a unitized direction vector
+
+**Constructors**
+
+  * `Ray(origin::Coord, direction::Coord)
+
+**Fields**
+
+  * `origin::Coord`
+  * `direction::Coord`
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L37' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L49-L60' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.Plane' href='#ConstructiveSolidGeometry.Plane'>#</a>
 **`ConstructiveSolidGeometry.Plane`** &mdash; *Type*.
 
 
 
-A plane is defined by a point Coord on the surface of the plane, its unit normal vector Coord, and a boundary condition. Boundary conditions are transmission (default), reflective, and vacuum
+```
+type Plane <: Surface
+```
+
+Defined by a point on the surface of the plane, its unit normal vector, and an optional boundary condition.
+
+**Constructors**
+
+  * `Plane(point::Coord, normal::Coord)`
+  * `Plane(point::Coord, normal::Coord, boundary::String)`
+
+**Arguments**
+
+  * `point::Coord`: Any point on the surface of the plane
+  * `normal::Coord`: A unit normal vector of the plane. Recommended to use `unitize(c::Coord)` if normalizing is needed.
+  * `boundary::String`: Optional boundary condition, defined as a `String`. Options are "transmission" (default), "vacuum", and "reflective".
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L46-L48' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L73-L86' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.Sphere' href='#ConstructiveSolidGeometry.Sphere'>#</a>
 **`ConstructiveSolidGeometry.Sphere`** &mdash; *Type*.
 
 
 
-A sphere is defined by its center Coord, its radius, and a boundary condition (transmission or vacuum)
+```
+type Sphere <: Surface
+```
+
+Defined by the center of the sphere, its radius, and an optional boundary condition.
+
+**Constructors**
+
+  * `Sphere(center::Coord, radius::Float64)`
+  * `Sphere(center::Coord, radius::Float64, boundary::String)`
+
+**Arguments**
+
+  * `center::Coord`: The center of the sphere
+  * `radius::Float64`: The radius of the sphere
+  * `boundary::String`: Optional boundary condition, defined as a `String`. Options are "transmission" (default), "vacuum", and "reflective".
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L66' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L105-L118' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.InfCylinder' href='#ConstructiveSolidGeometry.InfCylinder'>#</a>
 **`ConstructiveSolidGeometry.InfCylinder`** &mdash; *Type*.
 
 
 
-An Infinite Cylinder is defined by a Coord on its central axis, a unit direction vector Coord along its axis, its radius, and a boundary condition (transmission or vacuum)
+```
+type InfCylinder <: Surface
+```
+
+An arbitrary direction infinite cylinder defined by any point on its central axis, its radius, the unit normal direction of the cylinder, and an optional boundary condition. A finite cylinder can be generated by defining the intersection of an infinite cylinder and two planes.
+
+**Constructors**
+
+  * `InfCylinder(center::Coord, normal::Coord, radius::Float64)`
+  * `InfCylinder(center::Coord, normal::Coord, radius::Float64, boundary::String)`
+
+**Arguments**
+
+  * `center::Coord`: The center of the infinite cylinder
+  * `normal::Coord`: A unit normal direction vector of the cylinder (i.e., a vector along its central axis), Recommended to use `unitize(c::Coord)` if normalizing is needed.
+  * `radius::Float64`: The radius of the infinite cylinder
+  * `boundary::String`: Optional boundary condition, defined as a `String`. Options are "transmission" (default), "vacuum", and "reflective".
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L85' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L137-L151' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.Box' href='#ConstructiveSolidGeometry.Box'>#</a>
 **`ConstructiveSolidGeometry.Box`** &mdash; *Type*.
 
 
 
-A box is axis aligned and is defined by the minimum Coord and maximum Coord of the box
+```
+type Box
+```
+
+An axis aligned box is defined by the minimum `Coord` and maximum `Coord` of the box
+
+**Constructors**
+
+  * `Box(min::Coord, max::Coord)`
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L105' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L171-L178' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.Region' href='#ConstructiveSolidGeometry.Region'>#</a>
 **`ConstructiveSolidGeometry.Region`** &mdash; *Type*.
 
 
 
-Defined by a surface and a halfspace (+1 or -1)
+```
+type Region
+```
+
+The volume that is defined by a surface and one of its halfspaces
+
+**Constructors**
+
+  * `Region(surface::Surface, halfspace::Int64)`
+
+**Arguments**
+
+  * `surface::Surface`: A `Sphere`, `Plane`, or `InfCylinder`
+  * `halfspace::Int64`: Either +1 or -1
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L111' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L184-L195' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.Cell' href='#ConstructiveSolidGeometry.Cell'>#</a>
 **`ConstructiveSolidGeometry.Cell`** &mdash; *Type*.
 
 
 
-Defined by an array of Regions and a Julia expression indicating the logical combination of regions that define the cell
+```
+type Cell
+```
+
+Defined by an array of Regions the logical combination of regions that define the cell
+
+**Constructors**
+
+  * `Cell(regions::Array{region}`
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L117' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L201-L208' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.Geometry' href='#ConstructiveSolidGeometry.Geometry'>#</a>
 **`ConstructiveSolidGeometry.Geometry`** &mdash; *Type*.
@@ -114,7 +218,7 @@ Defined by an array of Regions and a Julia expression indicating the logical com
 The top level object that holds all the cells in the problem. This is used as input for the ray tracer
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L123' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L214' class='documenter-source'>source</a><br>
 
 
 <a id='Functions-1'></a>
@@ -129,7 +233,7 @@ The top level object that holds all the cells in the problem. This is used as in
 A utility function to determine the magnitude of a Coord object. Typical use case is to subtract two Coord objects and check the resulting Coord object's magnitude to determine the distance between the two Coords.
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L139' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L230' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.unitize' href='#ConstructiveSolidGeometry.unitize'>#</a>
 **`ConstructiveSolidGeometry.unitize`** &mdash; *Function*.
@@ -139,7 +243,7 @@ A utility function to determine the magnitude of a Coord object. Typical use cas
 A utility function to unitize a Coord object
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L141' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L232' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.raytrace-Tuple{ConstructiveSolidGeometry.Ray,ConstructiveSolidGeometry.Plane}' href='#ConstructiveSolidGeometry.raytrace-Tuple{ConstructiveSolidGeometry.Ray,ConstructiveSolidGeometry.Plane}'>#</a>
 **`ConstructiveSolidGeometry.raytrace`** &mdash; *Method*.
@@ -153,7 +257,7 @@ function raytrace(ray::Ray, surface::Surface)
 Returns a tuple representing if an intersection occurs (Bool) between a Ray and a Surface, and the distance (Float64) the intersection occurs at.
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L154-L158' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L245-L249' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.reflect-Tuple{ConstructiveSolidGeometry.Ray,ConstructiveSolidGeometry.Plane}' href='#ConstructiveSolidGeometry.reflect-Tuple{ConstructiveSolidGeometry.Ray,ConstructiveSolidGeometry.Plane}'>#</a>
 **`ConstructiveSolidGeometry.reflect`** &mdash; *Method*.
@@ -167,7 +271,7 @@ reflect(ray::Ray, plane::Plane)
 Reflects a ray off a plane and returns a new ray with the same origin but different direction.
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L244-L248' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L335-L339' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.generate_random_ray' href='#ConstructiveSolidGeometry.generate_random_ray'>#</a>
 **`ConstructiveSolidGeometry.generate_random_ray`** &mdash; *Function*.
@@ -181,7 +285,7 @@ generate_random_ray(box::Box)
 Returns a randomly sampled ray from within an axis aligned bounding box.
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L257-L261' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L348-L352' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.find_intersection-Tuple{ConstructiveSolidGeometry.Ray,ConstructiveSolidGeometry.Geometry}' href='#ConstructiveSolidGeometry.find_intersection-Tuple{ConstructiveSolidGeometry.Ray,ConstructiveSolidGeometry.Geometry}'>#</a>
 **`ConstructiveSolidGeometry.find_intersection`** &mdash; *Method*.
@@ -195,7 +299,7 @@ find_intersection(ray::Ray, geometry::Geometry)
 Takes a Ray and a Geometry and performs ray tracing. It returns a new Ray that has been moved just accross the point of closest intersection, the surface id that was hit, and the boundary condition of the surface that was hit
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L320-L324' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L411-L415' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.find_intersection-Tuple{ConstructiveSolidGeometry.Ray,Array{ConstructiveSolidGeometry.Region,N}}' href='#ConstructiveSolidGeometry.find_intersection-Tuple{ConstructiveSolidGeometry.Ray,Array{ConstructiveSolidGeometry.Region,N}}'>#</a>
 **`ConstructiveSolidGeometry.find_intersection`** &mdash; *Method*.
@@ -209,7 +313,7 @@ find_intersection(ray::Ray, regions::Array{Region})
 Takes a Ray and an array of Regions and performs ray tracing. It returns a new Ray that has been moved just accross the point of intersection, the surface id that was hit, and the boundary condition of the surface that was hit
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L285-L289' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L376-L380' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.is_in_cell' href='#ConstructiveSolidGeometry.is_in_cell'>#</a>
 **`ConstructiveSolidGeometry.is_in_cell`** &mdash; *Function*.
@@ -228,7 +332,7 @@ Determines if a point (such as a Ray origin) is inside a given cell
   * `cell::Cell`: the cell we want to see if p is within
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L434-L442' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L525-L533' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.find_cell_id' href='#ConstructiveSolidGeometry.find_cell_id'>#</a>
 **`ConstructiveSolidGeometry.find_cell_id`** &mdash; *Function*.
@@ -247,7 +351,7 @@ Finds the cell id that a point resides within
   * `geometry::Geometry': the geometry that we are checking the point within
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L503-L512' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L594-L603' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.plot_geometry_2D' href='#ConstructiveSolidGeometry.plot_geometry_2D'>#</a>
 **`ConstructiveSolidGeometry.plot_geometry_2D`** &mdash; *Function*.
@@ -263,11 +367,11 @@ Plots a 2D x-y slice of a geometry.
 **Arguments**
 
   * `geometry::Geometry`: the geometry we want to plot
-  * `view::Box``: The view box is an axis aligned box that defines where the picture will be taken, with both min and max z dimensions indicating the single z elevation the slice is taken at.
+  * `view::Box`: The view box is an axis aligned box that defines where the picture will be taken, with both min and max z dimensions indicating the single z elevation the slice is taken at.
   * `dim::Int64`: The dimension is the number of pixels along the x and y axis to use, which determines the resolution of the picture.
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L522-L531' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L613-L622' class='documenter-source'>source</a><br>
 
 <a id='ConstructiveSolidGeometry.plot_cell_2D' href='#ConstructiveSolidGeometry.plot_cell_2D'>#</a>
 **`ConstructiveSolidGeometry.plot_cell_2D`** &mdash; *Function*.
@@ -288,7 +392,7 @@ Plots a 2D x-y slice of a geometry, highlighting a specific cell in black.
   * `cell_id::Int64`: The index of the cell we wish to view
 
 
-<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/d1d6df296c9bcec18e33c4bc60ff5afd5a66fe0b/src/ConstructiveSolidGeometry.jl#L564-L574' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/jtramm/ConstructiveSolidGeometry.jl/tree/a95be03e85aaec04281c501d66fcb72e452ad2ff/src/ConstructiveSolidGeometry.jl#L655-L665' class='documenter-source'>source</a><br>
 
 
 <a id='Index-1'></a>
