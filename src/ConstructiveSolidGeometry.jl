@@ -245,7 +245,7 @@ end
     reflect(ray::Ray, plane::Plane)
 
 Reflects a ray off a plane and returns a new ray with the same origin but different direction.
-"
+"""
 function reflect(ray::Ray, plane::Plane)
     a = dot(ray.direction, plane.normal)
     b = plane.normal * (2.0 * a)
