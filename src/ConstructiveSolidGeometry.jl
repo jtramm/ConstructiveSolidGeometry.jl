@@ -26,6 +26,7 @@ export unitize
 export cross
 
 using Plots
+pyplot()
 
 """
     type Coord

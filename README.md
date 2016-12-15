@@ -19,6 +19,13 @@ The package can then be loaded by:
 using ConstructiveSolidGeometry
 ```
 
+Note that plotting functionality for this package is dependent on Plots package and the PyPlot backend. If you don't have these already, install them by:
+
+```julia
+Pkg.add("Plots")
+Pkg.ddd("PyPlot")
+```
+
 ## Documentation
 
 A full explanation of the package, its design and methodology is given in the examples directory:
