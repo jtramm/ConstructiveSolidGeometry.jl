@@ -336,7 +336,7 @@ new_ray, id, bc_type = find_intersection(ray, geometry)
 @test bc_type == "transmission"
 
 # Test Plotters
-plot_geometry_2D(geometry, geometry.bounding_box, 200)
-plot_cell_2D(geometry, geometry.bounding_box, 200, 1)
+#plot_geometry_2D(geometry, geometry.bounding_box, 200)
+#plot_cell_2D(geometry, geometry.bounding_box, 200, 1)
 
 println("Tests complete")
