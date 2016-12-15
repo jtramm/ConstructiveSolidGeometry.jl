@@ -9,6 +9,7 @@ This is the full API for this package. A more thorough description of how to act
 
 ```@docs
 Coord
+Surface
 Ray
 Plane
 Sphere

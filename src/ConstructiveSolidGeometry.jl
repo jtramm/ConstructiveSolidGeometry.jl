@@ -286,7 +286,7 @@ end
     find_intersection(ray::Ray, regions::Array{Region})
 
 Takes a Ray and an array of Regions and performs ray tracing. It returns a new Ray that has been moved just accross the point of intersection, the surface id that was hit, and the boundary condition of the surface that was hit
-"
+"""
 function find_intersection(ray::Ray, regions::Array{Region})
     BUMP::Float64 = 1.0e-9
     min::Float64 = 1e30
@@ -321,7 +321,7 @@ end
     find_intersection(ray::Ray, geometry::Geometry)
 
 Takes a Ray and a Geometry and performs ray tracing. It returns a new Ray that has been moved just accross the point of closest intersection, the surface id that was hit, and the boundary condition of the surface that was hit
-"
+"""
 function find_intersection(ray::Ray, geometry::Geometry)
 	cell_id = find_cell_id(ray.origin, geometry)
 	regions::Array{Region} = geometry.cells[cell_id].regions	
@@ -561,11 +561,6 @@ function plot_geometry_2D(geometry::Geometry, view::Box, dim::Int64)
     heatmap(x_coords,y_coords,pixels,aspect_ratio=1, color=gradient, leg=false)  
 end
 
-# Plots a 2D slice of a given cell. Takes the cell and a view.
-# The view is a 2D box (in x and y) that defines what will be plotted
-# The z dimension should be the same for lower_left and upper_right, and
-# represents where the slice is taken at
-"Plots a 2D slice highlighting a single Cell, given a Geometry, a view box, a dimension, and the cell id. The view box is an axis aligned box that defines where the picture will be taken, with both z dimensions indicating the single z elevation the slice is taken at. The dimension is the number of pixels along the x and y axis to use, which determines the resolution of the picture"
 """
     plot_cell_2D(geometry::Geometry, view::Box, dim::Int64, cell_id::Int64)
 
