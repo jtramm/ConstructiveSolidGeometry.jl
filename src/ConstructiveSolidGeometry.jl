@@ -28,17 +28,12 @@ export cross
 using Plots
 
 """
-   type Coord
+    type Coord
 
 An {x,y,z} coordinate type. Used throughout the ConstructiveSolidGeometry.jl package for speed.
 
 # Constructors
 * `Coord(x::Float64, y::Float64, z::Float64)`
-
-# Fields
-* `x::Float64`
-* `y::Float64`
-* `z::Float64`
 """
 type Coord
     x::Float64
@@ -53,10 +48,6 @@ A ray is defined by its origin and a unitized direction vector
 
 # Constructors
 * `Ray(origin::Coord, direction::Coord)`
-
-# Fields
-* `origin::Coord`
-* `direction::Coord`
 """
 type Ray
     origin::Coord
@@ -114,7 +105,7 @@ Defined by the center of the sphere, its radius, and an optional boundary condit
 # Arguments
 * `center::Coord`: The center of the sphere
 * `radius::Float64`: The radius of the sphere
-* `boundary::String`: Optional boundary condition, defined as a `String`. Options are \"transmission\" (default) or\"vacuum\".
+* `boundary::String`: Optional boundary condition, defined as a `String`. Options are \"transmission\" (default) or \"vacuum\".
 """
 type Sphere <: Surface
     center::Coord
@@ -690,7 +681,7 @@ Plots a 2D x-y slice of a geometry, highlighting a specific cell in black.
 
 # Arguments
 * `geometry::Geometry`: the geometry we want to plot
-* `view::Box``: The view box is an axis aligned box that defines where the picture will be taken, with both min and max z dimensions indicating the single z elevation the slice is taken at.
+* `view::Box`: The view box is an axis aligned box that defines where the picture will be taken, with both min and max z dimensions indicating the single z elevation the slice is taken at.
 * `dim::Int64`: The dimension is the number of pixels along the x and y axis to use, which determines the resolution of the picture.
 * `cell_id::Int64`: The index of the cell we wish to view
 """
