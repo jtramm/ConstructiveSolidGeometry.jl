@@ -224,6 +224,7 @@ type Geometry
 end
 
 _p = Coord(0,0,0)
+typeassert(_p, Coord)
 
 import Base: +, -, *, ^, |, ~
 +(a::Coord, b::Coord)     = Coord(a.x+b.x, a.y+b.y, a.z+b.z)
