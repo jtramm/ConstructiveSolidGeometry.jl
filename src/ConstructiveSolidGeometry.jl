@@ -27,7 +27,7 @@ export cross
 
 using Plots
 
-"An {x,y,z} coordinate type."
+"An {x,y,z} coordinate type. Used throughout the ConstructiveSolidGeometry.jl package for speed."
 type Coord
     x::Float64
     y::Float64
@@ -40,6 +40,7 @@ type Ray
     direction::Coord
 end
 
+"An abstract class that all surfaces (Sphere, Plane, InfCylinder) inherit from. Implementation of new shapes should inherit from this"
 abstract Surface
 
 "A plane is defined by a point Coord on the surface of the plane, its unit normal vector Coord, and a boundary condition.
@@ -150,7 +151,11 @@ cross(a::Coord, b::Coord) = Coord(a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y 
 #    1. Ray is inside the plane: Returns (true, NaN)
 #    2. Ray is parallel to the plan, but not inside: Returns (false, NaN)
 #    3. Ray never hits plane: Returns (false, NaN)
-"Returns a tuple representing if an intersection occurs (Bool) between a Ray and a Surface, and the distance (Float64) the intersection occurs at."
+"""
+    function raytrace(ray::Ray, surface::Surface)
+
+Returns a tuple representing if an intersection occurs (Bool) between a Ray and a Surface, and the distance (Float64) the intersection occurs at.
+"""
 function raytrace(ray::Ray, plane::Plane)
     dist::Float64 = dot( plane.point - ray.origin, plane.normal) / dot( ray.direction, plane.normal)    
     # Check if parallel
@@ -236,7 +241,11 @@ function raytrace(ray::Ray, infcylinder::InfCylinder)
     end
 end
 
-"Reflects a ray off a plane and returns a new ray with the same origin but different direction."
+"""
+    reflect(ray::Ray, plane::Plane)
+
+Reflects a ray off a plane and returns a new ray with the same origin but different direction.
+"
 function reflect(ray::Ray, plane::Plane)
     a = dot(ray.direction, plane.normal)
     b = plane.normal * (2.0 * a)
@@ -245,7 +254,11 @@ function reflect(ray::Ray, plane::Plane)
     return reflected_ray
 end
 
-"Returns a randomly sampled ray from within an axis aligned bounding box"
+"""
+    generate_random_ray(box::Box)
+
+Returns a randomly sampled ray from within an axis aligned bounding box.
+"""
 function generate_random_ray(box::Box)
     ray = Ray(Coord(0.0, 0.0, 0.0), Coord(0.0, 0.0, 0.0))
     
@@ -269,10 +282,11 @@ function generate_random_ray(box::Box)
     return ray
 end
 
-# Core ray tracing function. Takes a ray and an array of surfaces to test.
-# Moves ray forward and reflects its direction if needed
-# returns ray and shape index
-"This version of the function takes a Ray and an array of Regions and performs ray tracing. It returns a new Ray that has been moved just accross the point of intersection, the surface id that was hit, and the boundary condition of the surface that was hit"
+"""
+    find_intersection(ray::Ray, regions::Array{Region})
+
+Takes a Ray and an array of Regions and performs ray tracing. It returns a new Ray that has been moved just accross the point of intersection, the surface id that was hit, and the boundary condition of the surface that was hit
+"
 function find_intersection(ray::Ray, regions::Array{Region})
     BUMP::Float64 = 1.0e-9
     min::Float64 = 1e30
@@ -303,14 +317,19 @@ function find_intersection(ray::Ray, regions::Array{Region})
 
 end
 
-"This version of the function takes a Ray and a Geometry and performs ray tracing. It returns a new Ray that has been moved just accross the point of intersection, the surface id that was hit, and the boundary condition of the surface that was hit"
-# Overloaded form that works with full geometry rather than a specific cell
-# I.e., finds the cell that the ray is starting in then performs ray trace
+"""
+    find_intersection(ray::Ray, geometry::Geometry)
+
+Takes a Ray and a Geometry and performs ray tracing. It returns a new Ray that has been moved just accross the point of closest intersection, the surface id that was hit, and the boundary condition of the surface that was hit
+"
 function find_intersection(ray::Ray, geometry::Geometry)
 	cell_id = find_cell_id(ray.origin, geometry)
 	regions::Array{Region} = geometry.cells[cell_id].regions	
 	return find_intersection(ray, regions)
 end
+
+
+# The halfpsace functions are private methods, and all take a coordinate and a surface to determine which halfspace the coordinate is in.
 
 # Plane halfspace determination
 function halfspace(c::Coord, plane::Plane)
@@ -412,7 +431,15 @@ function ~(a::Region)
     return b
 end
 
-"Determines if a Coord (such as a Ray origin) is inside a given Cell"
+"""
+    is_in_cell(p::Coord, cell::Cell)
+
+Determines if a point (such as a Ray origin) is inside a given cell
+
+# Arguments
+* `p::Coord`: the point we want to test
+* `cell::Cell`: the cell we want to see if p is within
+"""
 function is_in_cell(p::Coord, cell::Cell)
     result = navigate_tree(p, cell.regions, cell.definition)
     return result
@@ -473,7 +500,16 @@ function navigate_tree(p::Coord, r::Array{Region}, ex::Expr)
 	end
 end
 
-"Finds the cell id given a Coord and a Geometry object"
+"""
+    find_cell_id(p::Coord, geometry::Geometry)
+
+Finds the cell id that a point resides within
+
+# Arguments
+* `p::Coord': the point we are testing
+* `geometry::Geometry': the geometry that we are checking the point within
+
+"""
 function find_cell_id(p::Coord, geometry::Geometry)
     for i = 1:length(geometry.cells)
         if is_in_cell(p, geometry.cells[i]) == true
@@ -483,12 +519,16 @@ function find_cell_id(p::Coord, geometry::Geometry)
     return -1
 end
 
+"""
+    plot_geometry_2D(geometry::Geometry, view::Box, dim::Int64)
 
-# Plots a 2D slice of a given geometry. Takes the geometry object and a view.
-# The view is a 2D box (in x and y) that defines what will be plotted
-# The z dimension should be the same for lower_left and upper_right, and
-# represents where the slice is taken at
-"Plots a 2D slice given a Geometry, a view box, and a dimension. The view box is an axis aligned box that defines where the picture will be taken, with both z dimensions indicating the single z elevation the slice is taken at. The dimension is the number of pixels along the x and y axis to use, which determines the resolution of the picture"
+Plots a 2D x-y slice of a geometry.
+
+# Arguments
+* `geometry::Geometry`: the geometry we want to plot
+* `view::Box``: The view box is an axis aligned box that defines where the picture will be taken, with both min and max z dimensions indicating the single z elevation the slice is taken at.
+* `dim::Int64`: The dimension is the number of pixels along the x and y axis to use, which determines the resolution of the picture.
+"""
 function plot_geometry_2D(geometry::Geometry, view::Box, dim::Int64)
     delta_x = (view.upper_right.x - view.lower_left.x) / (dim)
     delta_y = (view.upper_right.y - view.lower_left.y) / (dim)
@@ -526,6 +566,17 @@ end
 # The z dimension should be the same for lower_left and upper_right, and
 # represents where the slice is taken at
 "Plots a 2D slice highlighting a single Cell, given a Geometry, a view box, a dimension, and the cell id. The view box is an axis aligned box that defines where the picture will be taken, with both z dimensions indicating the single z elevation the slice is taken at. The dimension is the number of pixels along the x and y axis to use, which determines the resolution of the picture"
+"""
+    plot_cell_2D(geometry::Geometry, view::Box, dim::Int64, cell_id::Int64)
+
+Plots a 2D x-y slice of a geometry, highlighting a specific cell in black.
+
+# Arguments
+* `geometry::Geometry`: the geometry we want to plot
+* `view::Box``: The view box is an axis aligned box that defines where the picture will be taken, with both min and max z dimensions indicating the single z elevation the slice is taken at.
+* `dim::Int64`: The dimension is the number of pixels along the x and y axis to use, which determines the resolution of the picture.
+* `cell_id::Int64`: The index of the cell we wish to view
+"""
 function plot_cell_2D(geometry::Geometry, view::Box, dim::Int64, cell_id::Int64)
     delta_x = (view.upper_right.x - view.lower_left.x) / (dim)
     delta_y = (view.upper_right.y - view.lower_left.y) / (dim)
