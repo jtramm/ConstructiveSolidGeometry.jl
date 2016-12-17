@@ -7,13 +7,13 @@ A lightweight constructive solid geometry and ray tracing package for scientific
 
 ## Installation
 
-Once the package has been accepeted by `METADATA`, you will be able to install via:
+You can install this package with the following Julia command:
 
 ```julia
 Pkg.add("ConstructiveSolidGeometry")
 ```
 
-The package can then be loaded by:
+The package can then be loaded and used in a Julia script or a Jupyter Notebook by:
 
 ```julia
 using ConstructiveSolidGeometry
