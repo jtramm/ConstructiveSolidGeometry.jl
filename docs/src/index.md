@@ -14,6 +14,7 @@ Ray
 Plane
 Sphere
 InfCylinder
+Cone
 Box
 Region
 Cell

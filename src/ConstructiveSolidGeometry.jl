@@ -4,6 +4,7 @@ export Coord
 export Ray
 export Surface
 export Plane
+export Cone
 export Sphere
 export InfCylinder
 export Box
@@ -91,6 +92,40 @@ type Plane <: Surface
 		end
 	end
 	Plane(point::Coord, normal::Coord) = new(point, normal, false, false)
+end
+
+"""
+    type Cone <: Surface
+
+Defined by the tip of the cone, its direction axis vector, the angle between the central axis and the cone surface, and an optional boundary condition.
+
+# Constructors
+* `Cone(tip::Coord, axis::Coord, theta::Float64)`
+* `Cone(tip::Coord, axis::Coord, theta::Float64, boundary::String)`
+
+# Arguments
+* `tip::Coord`: The vertex (tip) of the cone
+* `axis::Coord`: A unit vector representing the central axis of the cone. The axis vector also indicates which direction the cone points, so should be placed pointing inside of the bounded cone area. Recommended to use `unitize(c::Coord)` if normalizing is needed.
+* `theta::Coord`: The angle (in radians) between the central axis (must be between 0 and pi/2)
+* `boundary::String`: Optional boundary condition, defined as a `String`. Options are \"transmission\" (default) or \"vacuum\".
+"""
+type Cone <: Surface
+    tip::Coord
+    axis::Coord
+	theta::Float64
+    reflective::Bool
+	vacuum::Bool
+	Cone(tip::Coord, axis::Coord, theta::Float64, ref::Bool, vac::Bool) = new(tip, axis, theta, ref, vac)
+	function Cone(tip::Coord, axis::Coord, theta::Float64, boundary::String)
+		if boundary == "reflective"
+			new(tip, axis, theta, true, false)
+		elseif boundary == "vacuum"
+			new(tip, axis, theta, false, true)
+		else
+			new(tip, axis, theta, false, false)
+		end
+	end
+	Cone(tip::Coord, axis::Coord, theta::Float64) = new(tip, axis, theta, false, false)
 end
 
 """
@@ -273,6 +308,66 @@ function raytrace(ray::Ray, plane::Plane)
         return false, NaN
     end
     return true, dist
+end
+
+# Ray - 3D Cone Intersection
+# Returns hit, distance
+# hit: a boolean indicating if an intersection occurred (false if parallel or negative)
+# dist: distance to closest intersection point
+function raytrace(ray::Ray, cone::Cone)
+
+	cos_theta_squared::Float64 = (cos(cone.theta))^2
+	CO::Coord = ray.origin - cone.tip
+
+	a::Float64 = dot(ray.direction, cone.axis)^2 - cos_theta_squared
+	b::Float64 = 2.0 * (dot(ray.direction, cone.axis) * dot(CO, cone.axis) - dot(ray.direction, CO) * cos_theta_squared)
+	c::Float64 = dot(CO, cone.axis)^2 - dot(CO, CO) * cos_theta_squared
+	
+	determinant::Float64 = b^2 - 4.0*a*c
+
+	if determinant < 0
+		return false, NaN
+	elseif determinant == 0
+		return true, -b/(2*a)
+	end
+
+	# Now we need to verify we are not intersecting with the shadow cone
+	one_over_two_a::Float64 = 1.0 / (2.0 * a)
+	t1::Float64 = (-b - sqrt(determinant)) * one_over_two_a  
+	t2::Float64 = (-b + sqrt(determinant)) * one_over_two_a
+	
+	p1::Coord = ray.origin + ray.direction * t1
+	p2::Coord = ray.origin + ray.direction * t2
+
+	valid1::Bool = false
+	valid2::Bool = false
+
+	# Check against shadow cone & ensure intersection is in front of ray
+	if t1 >= 0 && dot((p1-cone.tip),cone.axis) > 0
+		valid1 = true
+	end
+	if t2 >= 0 && dot((p2-cone.tip),cone.axis) > 0
+		valid2 = true
+	end
+
+	# If both points hit real cone, return closer one
+	if valid1 && valid2
+		if t1 < t2
+			return true, t1
+		else
+			return true, t2
+		end
+	end
+
+	if valid1 && !valid2
+		return true, t1
+	end
+
+	if !valid1 && valid2
+		return true, t2
+	end
+
+	return false, NaN
 end
 
 # Ray - 3D Sphere Intersection
@@ -458,6 +553,17 @@ end
 function halfspace(c::Coord, plane::Plane)
     d::Float64 = -dot(plane.normal, plane.point)
     half::Float64 = dot(plane.normal, c) + d
+    if half <= 0
+        return -1
+    else
+        return 1
+    end
+end
+
+# Cone halfspace determination
+function halfspace(c::Coord, cone::Cone)
+	p_minus_c::Coord = c - cone.tip
+    half::Float64 = dot(p_minus_c,cone.axis)^2 - dot(p_minus_c,p_minus_c) * (cos(cone.theta))^2
     if half <= 0
         return -1
     else

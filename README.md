@@ -26,6 +26,8 @@ Pkg.add("Plots")
 Pkg.ddd("PyPlot")
 ```
 
+The PyPlot package requires that matplotlib (a python package) be installed on your system, which can be done using apt-get, pip, or by following the full instructions [here](http://matplotlib.org/faq/installing_faq.html#python-org-python).
+
 ## Documentation
 
 A full explanation of the package, its design and methodology is given in the examples directory:

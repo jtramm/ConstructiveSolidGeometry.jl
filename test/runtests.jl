@@ -50,6 +50,58 @@ test_ray = Ray(Coord(-1.0, 0.0, 0.0), Coord(0.0, 1.0, 0.0) )
 test_sphere = Sphere(Coord(0.0, 0.0, 0.0), 1.0)
 @test raytrace(test_ray, test_sphere) == (true, 0.0)
 
+
+# Unit tests for ray <-> Cone intersection
+
+# Hit from inside
+test_ray = Ray(Coord(0.0, 0.0, 0.0), Coord(1.0, 0.0, 0.0) )
+test_cone = Cone(Coord(0.0, 0.0, 1.0), Coord(0.0, 0.0, -1.0), pi/4.0 )
+@test raytrace(test_ray, test_cone)[1] == true
+@test raytrace(test_ray, test_cone)[2] ≈ 1.0
+
+# Hit from inside
+test_ray = Ray(Coord(-0.5, 0.0, 0.0), Coord(1.0, 0.0, 0.0) )
+test_cone = Cone(Coord(0.0, 0.0, 1.0), Coord(0.0, 0.0, -1.0), pi/4.0 )
+@test raytrace(test_ray, test_cone)[1] == true
+@test raytrace(test_ray, test_cone)[2] ≈ 1.5
+
+# Hit from outside
+test_ray = Ray(Coord(-5.0, 0.0, 0.0), Coord(1.0, 0.0, 0.0) )
+test_cone = Cone(Coord(0.0, 0.0, 1.0), Coord(0.0, 0.0, -1.0), pi/4.0 )
+@test raytrace(test_ray, test_cone)[1] == true
+@test raytrace(test_ray, test_cone)[2] ≈ 4.0
+
+# Hit at angle from outside
+test_ray = Ray(Coord(-5.0, 1.0, 1.0), unitize(Coord(1.0, 0.0, -1.0)) )
+test_cone = Cone(Coord(0.0, 0.0, 1.0), unitize(Coord(0.0, 0.1, -1.0)), pi/4.0 )
+@test raytrace(test_ray, test_cone)[1] == true
+@test raytrace(test_ray, test_cone)[2] ≈ 3.5511721769144815
+
+# Hit at 45 at angle from outside, for rotated cylinder
+test_ray = Ray(Coord(1.0, 1.0, 2.0), unitize(Coord(1.0, 1.0, 0.0)) )
+test_cone = Cone(Coord(1.0, 1.0, 1.0), unitize(Coord(1.0, 1.0, 0.0)), pi/4.0 )
+@test raytrace(test_ray, test_cone)[1] == true
+@test raytrace(test_ray, test_cone)[2] ≈ 1.0
+
+# Hit of shadow of cone
+test_ray = Ray(Coord(0.0, 0.0, 2.0), Coord(1.0, 0.0, 0.0) )
+test_cone = Cone(Coord(0.0, 0.0, 1.0), Coord(0.0, 0.0, -1.0), pi/4.0 )
+@test raytrace(test_ray, test_cone)[1] == false
+
+# Valid hit after shadow of cone
+test_ray = Ray(Coord(0.5, 0.0, 2.0), Coord(0.0, 0.0, -1.0) )
+test_cone = Cone(Coord(0.0, 0.0, 1.0), Coord(0.0, 0.0, -1.0), pi/4.0 )
+@test raytrace(test_ray, test_cone)[1] == true
+@test raytrace(test_ray, test_cone)[2] ≈ 1.5
+
+# Valid hit before shadow of cone
+test_ray = Ray(Coord(0.5, 0.0, 0.0), Coord(0.0, 0.0, 1.0) )
+test_cone = Cone(Coord(0.0, 0.0, 1.0), Coord(0.0, 0.0, -1.0), pi/4.0 )
+@test raytrace(test_ray, test_cone)[1] == true
+@test raytrace(test_ray, test_cone)[2] ≈ 0.5
+
+
+
 # Unit tests for ray <-> Infinite Cylinder intersection
 # Z Cylinder Tests
 
@@ -166,6 +218,31 @@ test_sphere = Sphere(Coord(-2.0, -2.0, -2.0), 0.1)
 test_coord = Coord(1.0, 0.0, 0.0)
 test_sphere = Sphere(Coord(0.0, 0.0, 0.0), 1.0)
 @test halfspace(test_coord, test_sphere) == -1
+
+# Test Cone halfspace
+
+# Inside cone
+test_coord = Coord(0.0, 0.0, 0.0)
+test_cone = Cone(Coord(0.0, 0.0, 1.0), Coord(0.0, 0.0, -1.0),  pi/8.0)
+@test halfspace(test_coord, test_cone) == 1
+
+# outside cone
+test_coord = Coord(5.0, 0.0, 0.0)
+@test halfspace(test_coord, test_cone) == -1
+
+# outside cone (but inside shadow)
+#test_coord = Coord(0.0, 0.0, 2.0)
+@test halfspace(test_coord, test_cone) == -1
+
+# Inside rotated cylinder
+test_coord = Coord(1.5, 1.5, 1.1)
+test_cone = Cone(Coord(1.0, 1.0, 1.0), unitize(Coord(1.0, 1.0, 0.0)), pi/4.0 )
+@test halfspace(test_coord, test_cone) == 1
+
+# Outside rotated cylinder
+test_coord = Coord(1.5, 1.5, 2.1)
+test_cone = Cone(Coord(1.0, 1.0, 1.0), unitize(Coord(1.0, 1.0, 0.0)), pi/4.0 )
+@test halfspace(test_coord, test_cone) == -1
 
 # Test InfCylinder Halfspace
 
