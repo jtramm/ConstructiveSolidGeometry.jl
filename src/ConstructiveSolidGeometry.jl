@@ -106,7 +106,7 @@ Defined by the tip of the cone, its direction axis vector, the angle between the
 # Arguments
 * `tip::Coord`: The vertex (tip) of the cone
 * `axis::Coord`: A unit vector representing the central axis of the cone. As the cone equation actually defines two cones eminating in a mirrored fashion from the tip, this direction vector also indicates which cone is the true cone. I.e., following the direction of the axis vector when starting from the tip should lead inside the cone you actually want.  Recommended to use `unitize(c::Coord)` if normalizing is needed.
-* `theta::Coord`: The angle (in radians) between the central axis (must be between 0 and pi/2)
+* `theta::Float64`: The angle (in radians) between the central axis (must be between 0 and pi/2)
 * `boundary::String`: Optional boundary condition, defined as a `String`. Options are \"transmission\" (default) or \"vacuum\".
 """
 type Cone <: Surface
