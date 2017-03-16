@@ -23,7 +23,7 @@ Note that plotting functionality for this package is dependent on Plots package 
 
 ```julia
 Pkg.add("Plots")
-Pkg.ddd("PyPlot")
+Pkg.add("PyPlot")
 ```
 
 The PyPlot package requires that matplotlib (a python package) be installed on your system, which can be done using apt-get, pip, or by following the full instructions [here](http://matplotlib.org/faq/installing_faq.html#python-org-python).
