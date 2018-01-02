@@ -60,7 +60,7 @@ end
 
 An abstract class that all surfaces (`Sphere`, `Plane`, `InfCylinder`) inherit from. Implementation of new shapes should inherit from `Surface`.
 """
-abstract Surface
+abstract type Surface end
 
 """
     type Plane <: Surface
@@ -261,7 +261,7 @@ end
 _p = Coord(0,0,0)
 typeassert(_p, Coord)
 
-import Base: +, -, *, ^, |, ~
+import Base: +, -, *, ^, |, ~, dot, cross
 +(a::Coord, b::Coord)     = Coord(a.x+b.x, a.y+b.y, a.z+b.z)
 -(a::Coord, b::Coord)     = Coord(a.x-b.x, a.y-b.y, a.z-b.z)
 *(a::Float64, b::Coord)   = Coord(a*b.x, a*b.y, a*b.z)
@@ -302,7 +302,7 @@ Determines if a `Ray` and a `Surface` intersect, and the distance to that inters
 * `Float64`: The distance between the ray's origin and the point of intersection
 """
 function raytrace(ray::Ray, plane::Plane)
-    dist::Float64 = dot( plane.point - ray.origin, plane.normal) / dot( ray.direction, plane.normal)    
+    dist::Float64 = dot( plane.point - ray.origin, plane.normal) / dot( ray.direction, plane.normal)
     # Check if parallel
     if dist < 0 || dist == Inf
         return false, NaN
@@ -322,7 +322,7 @@ function raytrace(ray::Ray, cone::Cone)
 	a::Float64 = dot(ray.direction, cone.axis)^2 - cos_theta_squared
 	b::Float64 = 2.0 * (dot(ray.direction, cone.axis) * dot(CO, cone.axis) - dot(ray.direction, CO) * cos_theta_squared)
 	c::Float64 = dot(CO, cone.axis)^2 - dot(CO, CO) * cos_theta_squared
-	
+
 	determinant::Float64 = b^2 - 4.0*a*c
 
 	if determinant < 0
@@ -333,9 +333,9 @@ function raytrace(ray::Ray, cone::Cone)
 
 	# Now we need to verify we are not intersecting with the shadow cone
 	one_over_two_a::Float64 = 1.0 / (2.0 * a)
-	t1::Float64 = (-b - sqrt(determinant)) * one_over_two_a  
+	t1::Float64 = (-b - sqrt(determinant)) * one_over_two_a
 	t2::Float64 = (-b + sqrt(determinant)) * one_over_two_a
-	
+
 	p1::Coord = ray.origin + ray.direction * t1
 	p2::Coord = ray.origin + ray.direction * t2
 
@@ -375,12 +375,12 @@ end
 # hit: a boolean indicating if an intersection occurred (false if parallel or negative)
 # dist: distance to closest intersection point
 function raytrace(ray::Ray, sphere::Sphere)
-    d::Coord = ray.origin - sphere.center 
+    d::Coord = ray.origin - sphere.center
     t::Float64 = -dot(ray.direction, d)
     discriminant::Float64 = t^2
     discriminant -= magnitude(d)^2
     discriminant += sphere.radius^2
-    
+
     # If the discriminant is less than zero, they don't hit
     if discriminant < 0
         return false, Inf
@@ -388,7 +388,7 @@ function raytrace(ray::Ray, sphere::Sphere)
     sqrt_val::Float64 = sqrt(discriminant)
     pos::Float64 = t - sqrt_val
     neg::Float64 = t + sqrt_val
-    
+
     if pos < 0  && neg < 0
         return false, NaN
     end
@@ -398,7 +398,7 @@ function raytrace(ray::Ray, sphere::Sphere)
     if pos < neg && pos > 0
         return true, pos
     end
-    
+
     return true, neg
 end
 
@@ -420,16 +420,16 @@ function raytrace(ray::Ray, infcylinder::InfCylinder)
     a::Float64 = dot(VxAB, VxAB)
     b::Float64 = 2.0 * dot(VxAB, AOxAB)
     c::Float64 = dot(AOxAB, AOxAB) - (r*r * ab2)
-    
+
     # Check Determininant
     det::Float64 = b^2 - 4.0 * a * c
     if det < 0
         return false, Inf
     end
-    
+
     pos::Float64 = (-b + sqrt(det)) / (2.0 * a)
     neg::Float64 = (-b - sqrt(det)) / (2.0 * a)
-    
+
     if pos < 0
         if neg < 0
             return false, NaN
@@ -469,13 +469,13 @@ Returns a randomly sampled ray from within an axis aligned bounding box.
 """
 function generate_random_ray(box::Box)
     ray = Ray(Coord(0.0, 0.0, 0.0), Coord(0.0, 0.0, 0.0))
-    
+
     # Sample Origin
     width = Coord(box.upper_right.x - box.lower_left.x, box.upper_right.y - box.lower_left.y, box.upper_right.z - box.lower_left.z)
     ray.origin.x = box.lower_left.x + rand(Float64)*width.x
     ray.origin.y = box.lower_left.y + rand(Float64)*width.y
     ray.origin.z = box.lower_left.z + rand(Float64)*width.z
-    
+
     # Sample Direction From Sphere
     theta::Float64 = rand(Float64) * 2.0 * pi
     z::Float64 = -1.0 + 2.0 * rand(Float64)
@@ -483,10 +483,10 @@ function generate_random_ray(box::Box)
     ray.direction.x = zo * cos(theta);
     ray.direction.y = zo * sin(theta);
     ray.direction.z = z;
-    
+
     # Normalize Direction
     ray.direction = unitize(ray.direction)
-    
+
     return ray
 end
 
@@ -513,19 +513,19 @@ function find_intersection(ray::Ray, regions::Array{Region})
             end
         end
     end
-    
+
     new_ray::Ray = Ray(ray.origin + ray.direction * (min + BUMP), ray.direction)
-    
+
     if regions[id].surface.reflective == true
         new_ray = reflect(new_ray, regions[id].surface)
         new_ray.origin = new_ray.origin + new_ray.direction * (2.0 * BUMP)
 		return new_ray, id, "reflective"
     end
-    
+
 	if regions[id].surface.vacuum == true
 		return new_ray, id, "vacuum"
     end
-    
+
     return new_ray, id, "transmission"
 
 end
@@ -542,7 +542,7 @@ Performs ray tracing on a Geometry
 """
 function find_intersection(ray::Ray, geometry::Geometry)
 	cell_id = find_cell_id(ray.origin, geometry)
-	regions::Array{Region} = geometry.cells[cell_id].regions	
+	regions::Array{Region} = geometry.cells[cell_id].regions
 	return find_intersection(ray, regions)
 end
 
@@ -594,7 +594,7 @@ end
 
 
 function ^(a::Region, b::Region)
-    if halfspace(_p, a.surface) == a.halfspace 
+    if halfspace(_p, a.surface) == a.halfspace
         if halfspace(_p, b.surface) == b.halfspace
             return true
         end
@@ -681,7 +681,7 @@ function navigate_tree(p::Coord, r::Array{Region}, ex::Expr)
 			return ~ navigate_tree(p, r, ex.args[2])
 		end
 	end
-	
+
 	if typeof(ex.args[2]) == typeof(1)
 		# Case 1 - Both operands are leaves
 		if typeof(ex.args[3]) == typeof(1)
@@ -702,7 +702,7 @@ function navigate_tree(p::Coord, r::Array{Region}, ex::Expr)
 			end
 		end
 	end
-	
+
 	if typeof(ex.args[2]) != typeof(1)
 		# Case 3 - left operand is not leaf, but right is
 		if typeof(ex.args[3]) == typeof(1)
@@ -752,12 +752,12 @@ Plots a 2D x-y slice of a geometry.
 function plot_geometry_2D(geometry::Geometry, view::Box, dim::Int64)
     delta_x = (view.upper_right.x - view.lower_left.x) / (dim)
     delta_y = (view.upper_right.y - view.lower_left.y) / (dim)
-    
+
     x_coords = collect(view.lower_left.x + delta_x/2.0:delta_x:view.upper_right.x - delta_x/2.0)
     y_coords = collect(view.lower_left.y + delta_y/2.0:delta_y:view.upper_right.y - delta_y/2.0)
 
     pixels = Array{Int64, 2}(dim, dim)
-    
+
     for i=1:dim
         for j=1:dim
             pixels[i,j] = find_cell_id(Coord(x_coords[i], y_coords[j], view.lower_left.z), geometry)
@@ -778,7 +778,7 @@ function plot_geometry_2D(geometry::Geometry, view::Box, dim::Int64)
         #push!(colors, RGBA(rand(),rand(),rand(),1.0) )
     end
     gradient = ColorGradient(colors)
-    heatmap(x_coords,y_coords,pixels,aspect_ratio=1, color=gradient, leg=false)  
+    heatmap(x_coords,y_coords,pixels,aspect_ratio=1, color=gradient, leg=false)
 end
 
 """
@@ -795,12 +795,12 @@ Plots a 2D x-y slice of a geometry, highlighting a specific cell in black.
 function plot_cell_2D(geometry::Geometry, view::Box, dim::Int64, cell_id::Int64)
     delta_x = (view.upper_right.x - view.lower_left.x) / (dim)
     delta_y = (view.upper_right.y - view.lower_left.y) / (dim)
-    
+
     x_coords = collect(view.lower_left.x + delta_x/2.0:delta_x:view.upper_right.x - delta_x/2.0)
     y_coords = collect(view.lower_left.y + delta_y/2.0:delta_y:view.upper_right.y - delta_y/2.0)
 
     pixels = Array{Int64, 2}(dim, dim)
-    
+
     for i=1:dim
         for j=1:dim
             pixels[i,j] = find_cell_id(Coord(x_coords[i], y_coords[j], view.lower_left.z), geometry)
@@ -816,7 +816,7 @@ function plot_cell_2D(geometry::Geometry, view::Box, dim::Int64, cell_id::Int64)
     push!(colors, RGBA(0.0, 0.0, 0.0, 1.0))
     push!(colors, RGBA(1.0, 1.0, 1.0, 1.0))
     gradient = ColorGradient(colors)
-    heatmap(x_coords,y_coords,pixels,aspect_ratio=1, color=gradient, leg=false)  
+    heatmap(x_coords,y_coords,pixels,aspect_ratio=1, color=gradient, leg=false)
 end
 
 end # module
