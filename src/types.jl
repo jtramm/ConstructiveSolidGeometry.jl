@@ -189,7 +189,7 @@ The volume that is defined by a surface and one of its halfspaces
 * `surface::Surface`: A `Sphere`, `Plane`, or `InfCylinder`
 * `halfspace::Int64`: Either +1 or -1
 """
-struct Region
+mutable struct Region
     surface::Surface
     halfspace::Int64
 end
