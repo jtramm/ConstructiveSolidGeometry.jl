@@ -15,7 +15,7 @@ function plot_geometry_2D(geometry::Geometry, view::Box, dim::Int64)
     x_coords = collect(view.lower_left.x + delta_x/2.0:delta_x:view.upper_right.x - delta_x/2.0)
     y_coords = collect(view.lower_left.y + delta_y/2.0:delta_y:view.upper_right.y - delta_y/2.0)
 
-    pixels = Array{Int64, 2}(dim, dim)
+    pixels = Array{Int64}(undef, dim, dim)
 
     for i=1:dim
         for j=1:dim
@@ -23,7 +23,7 @@ function plot_geometry_2D(geometry::Geometry, view::Box, dim::Int64)
         end
     end
     pixels = rotl90(pixels)
-    colors = Array{RGBA}(0)
+    colors = Array{RGBA}(undef,0)
     for i=1:length(geometry.cells)
         if (i-1)%4 == 0
             push!(colors, RGBA(1.0, 0.0, 0.0, 1.0))
@@ -36,7 +36,7 @@ function plot_geometry_2D(geometry::Geometry, view::Box, dim::Int64)
         end
         #push!(colors, RGBA(rand(),rand(),rand(),1.0) )
     end
-    gradient = ColorGradient(colors)
+    gradient = cgrad(colors)
     heatmap(x_coords,y_coords,pixels,aspect_ratio=1, color=gradient, leg=false)
 end
 
@@ -58,7 +58,7 @@ function plot_cell_2D(geometry::Geometry, view::Box, dim::Int64, cell_id::Int64)
     x_coords = collect(view.lower_left.x + delta_x/2.0:delta_x:view.upper_right.x - delta_x/2.0)
     y_coords = collect(view.lower_left.y + delta_y/2.0:delta_y:view.upper_right.y - delta_y/2.0)
 
-    pixels = Array{Int64, 2}(dim, dim)
+    pixels = Array{Int64}(undef, dim, dim)
 
     for i=1:dim
         for j=1:dim
@@ -71,9 +71,9 @@ function plot_cell_2D(geometry::Geometry, view::Box, dim::Int64, cell_id::Int64)
         end
     end
     pixels = rotl90(pixels)
-    colors = Array{RGBA}(0)
+    colors = Array{RGBA}(undef,0)
     push!(colors, RGBA(0.0, 0.0, 0.0, 1.0))
     push!(colors, RGBA(1.0, 1.0, 1.0, 1.0))
-    gradient = ColorGradient(colors)
-    heatmap(x_coords,y_coords,pixels,aspect_ratio=1, color=gradient, leg=false)
+    gradient = cgrad(colors)
+    heatmap(x_coords, y_coords, pixels, aspect_ratio=1, color=gradient, leg=false)
 end

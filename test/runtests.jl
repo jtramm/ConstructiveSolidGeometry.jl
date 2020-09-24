@@ -1,5 +1,7 @@
-using ConstructiveSolidGeometry
-using Base.Test
+#using ConstructiveSolidGeometry
+include("../src/ConstructiveSolidGeometry.jl")
+using Main.ConstructiveSolidGeometry
+using Test
 
 # Unit tests for ray <-> plane intersection
 
@@ -265,7 +267,7 @@ test_cylinder = InfCylinder(Coord(1.9, 1.9, 0.0), unitize(Coord(0.0, 0.0, 1.0)),
 bounding_box = Box(Coord(-.63, -.63, -150), Coord(.63, .63, 150))
 
 # Containers to store cells as we make them
-cells = Array{Cell}(0)
+cells = Cell[]
 
 # Define all the surfaces we will use up front
 # Box
@@ -280,7 +282,7 @@ clad_inner = InfCylinder(Coord(0.0, 0.0, 0.0), unitize(Coord(0.0, 0.0, 1.0)), 0.
 fuel = InfCylinder(Coord(0.0, 0.0, 0.0), unitize(Coord(0.0, 0.0, 1.0)), 0.4096)
 
 # Make the Water Region
-regions = Array{Region}(0)
+regions = Region[]
 
 push!(regions, Region(top, -1))
 push!(regions, Region(bot, -1))
@@ -295,7 +297,7 @@ ex = :(1 ^ 2 ^ 3 ^ 4 ^ 5 ^ 6 ^ 7)
 push!(cells, Cell(regions, ex))
 
 # Make the Cladding
-regions = Array{Region}(0)
+regions = Region[]
 
 push!(regions, Region(top, -1))
 push!(regions, Region(bot, -1))
@@ -307,7 +309,7 @@ ex = :(1 ^ 2 ^ 3 ^ 4)
 push!(cells, Cell(regions, ex))
 
 # Make the Gap
-regions = Array{Region}(0)
+regions = Region[]
 
 push!(regions, Region(top, -1))
 push!(regions, Region(bot, -1))
@@ -319,7 +321,7 @@ ex = :(1 ^ 2 ^ 3 ^ 4)
 push!(cells, Cell(regions, ex))
 
 # Make the Fuel
-regions = Array{Region}(0)
+regions = Region[]
 
 push!(regions, Region(top, -1))
 push!(regions, Region(bot, -1))
@@ -342,7 +344,7 @@ geometry = Geometry(cells, bounding_box)
 bounding_box = Box(Coord(-.63, -.63, -150), Coord(.63, .63, 150))
 
 # Containers to store cells as we make them
-cells = Array{Cell}(0)
+cells = Cell[]
 
 # Define all the surfaces we will use up front
 # Box
@@ -356,7 +358,7 @@ left_cyl = InfCylinder(Coord(-0.175, 0.0, 0.0), unitize(Coord(0.0, 0.0, 1.0)), 0
 right_cyl = InfCylinder(Coord(0.1, 0.0, 0.0), unitize(Coord(0.0, 0.0, 1.0)), 0.2)
 
 # Make the outer Region
-regions = Array{Region}(0)
+regions = Region[]
 
 push!(regions, Region(top, -1))
 push!(regions, Region(bot, -1))
@@ -372,7 +374,7 @@ ex = :(1 ^ 2 ^ 3 ^ 4 ^ 5 ^ (~(7 | 8)) ^ 6 )
 push!(cells, Cell(regions, ex))
 
 # Make the inner Region
-regions = Array{Region}(0)
+regions = Region[]
 
 push!(regions, Region(top, -1))
 push!(regions, Region(bot, -1))
