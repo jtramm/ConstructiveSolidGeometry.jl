@@ -1,6 +1,4 @@
-#using ConstructiveSolidGeometry
-include("../src/ConstructiveSolidGeometry.jl")
-using Main.ConstructiveSolidGeometry
+using ConstructiveSolidGeometry
 using Test
 
 # Unit tests for ray <-> plane intersection

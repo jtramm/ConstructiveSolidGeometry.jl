@@ -1,1 +1,15 @@
+name = "ConstructiveSolidGeometry"
+uuid = "76454c72-eddb-403e-aaaa-a2fa3a621fa7"
+authors = ["John Tramm <john.tramm@gmail.com>"]
+version = "0.1.0"
 
+[deps]
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+Plots = "0.10.1"
+julia = "1.5"
+
+[target]
+test = ["Test"]
